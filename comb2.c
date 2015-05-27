@@ -2,7 +2,7 @@
 
 int comb(char *place, int n, char *symbol, int m);
 
-/* prints m symbols taken n at a time */
+/* prints m symbols taken n at a time, the symbols are made-up */
 int main(int argc, char **argv)
 {
 	if (argc != 3) {
@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 	char symbol[m];	/* no '\0' because *symbol will not be printed */
 	int i;
 	for (i = 0; i < m; i++)
-		symbol[i] = '0' + i;	/* totally bug prone */
+		symbol[i] = '0' + i;	/* totally bug prone, please do not input m beyond the ASCII set */
 	int n = atoi(*++argv);
 	char place[n + 1];
 	place[n] = '\0';

@@ -1,7 +1,6 @@
-/* working */
-
 #include <stdio.h>
 #include <string.h>
+int combine(char *symbol, int r);
 #include <stdlib.h>
 
 struct list {	
@@ -10,43 +9,41 @@ struct list {
 	struct list *next;
 } A = {0, NULL, NULL};	/* the linked list */
 
-struct page {
-	int count;
-	struct list *List;
-	struct page *next;
-
-} B = {0, NULL, NULL};
-
+int printc(struct list *r, char *symbols);
 int perm2(char *digits, int n, char *symbols);
 int permute(char *symbols, int n);
 
 char *pluck(const char *s, int n);
 int add(struct list *, char *s);
 int dups(struct list *r, char *s);
-int print(struct page *r);
-int combine(struct list *r);
-int count (char c, char *s);
-int inlist(struct list *r);
-int twins(char *s, char *t);
 
-struct page *current;
-
-/* combination of argv[1] taken argv[2] at a time */
+/*  an implementation of comb.c using perm2 algorithm without using brute force search */
 int main(int argc, char *argv[])
 {
 	if (argc != 3) {
-		printf("combi string nplaces\n");
+		printf("%s string nplaces\n", argv[0]);
 		return 1;
-	} 
-	current = &B;
-	permute(argv[1], atoi(argv[2]));
-	combine(A.next);
-	print(B.next);
+	}
+//	permute(argv[1], atoi(argv[2]));
+	combine(argv[1], atoi(argv[2]));
 	return 0;
 }
 
-
-/* permute: convenient wrapper for the permutation program */
+/* combine: use a permutated map to decide which symbol to print */
+int combine(char *symbol, int r)
+{
+	int n = strlen(symbol);
+	char map[n + 1];
+	int i;
+	for (i = 0; i < n; i++)
+		map[i] = (i < r) ? '1' : '0';
+	char buf[i + 1];
+	 buf[i] = map[i] = '\0';
+	perm2(buf, n, map);
+	printc(A.next, symbol);
+	return 0;
+}
+/* permute: convenient wrapper for the whole program */
 int permute(char *symbols, int n)
 {
 	int m = strlen(symbols); 	/* no. of objects */
@@ -57,70 +54,10 @@ int permute(char *symbols, int n)
 
 	perm2(digits, n, symbols);
 
-//	read(A.next);
+	read(A.next);
 
 	return 0;
 }
-
-/* print: prints a page list */
-int print(struct page *r)
-{
-	if (r == NULL)
-		return 0;
-	static int i = 0;
-	printf("%s %d\n", r->List->word, ++i);
-	return print(r->next);
-}
-
-/* combine: creates a list of combinations */
-int combine(struct list *r)
-{
-	if (r == NULL) {
-		return 0;
-	}
-	if (!inlist(r)) { 
-		current->next = (struct page *)malloc(sizeof(struct page));
-		current = current->next;
-		current->List = r;
-		current->count++;
-		current->next = NULL;
-	}
-	return combine(r->next);
-}
-
-/* inlist: returns 1 if list r is already in the B tree, 0 otherwise */
-int inlist(struct list *r)
-{
-	struct page *temp;
-	for (temp = B.next; temp != NULL; temp = temp->next)
-		if (twins(temp->List->word, r->word))
-			return 1;
-	return 0;
-}
-
-/* twins: returns 1 if the letters of s are combinatorially equivalent to the letters of t, 0 otherwise */
-int twins(char *s, char *t)
-{
-	int n;
-	if ((n = sizeof(s) - 1) != sizeof(t) - 1)
-		return 0;
-	int i;
-	for (i = 0; i < n; i++)
-		if (count(s[i], s) != count (s[i], t))
-			return 0;
-	return 1;
-}
-
-/* count: returns the number of occurrences of c in s */
-int count (char c, char *s)
-{
-	int i;
-	for (i = 0; *s != '\0'; s++)
-		if (*s == c)
-			i++;
-	return i;
-}
-
 
 /* read: reads list */
 int read(struct list *r)
@@ -130,7 +67,19 @@ int read(struct list *r)
 	printf("%s\t%d\n", r->word, r->count);
 	read(r->next);
 }
-
+/* printc: prints *symbols as mapped by *r */
+int printc(struct list *r, char *symbols)
+{
+	int i;
+	struct list *current;
+	int max = strlen(symbols);
+	for (current = r; current != NULL; current = current->next) {
+		for (i = 0; i < max; i++)
+			if ( *(current->word + i) == '1')
+				putchar(symbols[i]);
+		putchar('\n');
+	}
+}
 /* dups: checks if string is already in linked list */
 int dups(struct list *r, char *s)
 {
@@ -168,7 +117,6 @@ int add(struct list *r, char *s)
 		r = r->next; 	/* for convenience */
 		r->word = (char *)malloc(sizeof(s));
 		strcpy(r->word, s);
-		//r->next = NULL;
 		return 0;
 	}
 	return add(r->next, s);
@@ -191,3 +139,4 @@ char *pluck(const char *s, int n)
 	return temp - m + 1;
 }
 
+/* testing makefile */
