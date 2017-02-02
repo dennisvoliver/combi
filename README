@@ -1,0 +1,3 @@
+comb: accepts a string of characters and the number to be combined
+comb1: does the same thing comb does except that it does not use brute force search
+comb2: this is the gold, it accepts two integers, one is the total number of objects and the other is the number to be combined, it uses the ASCII character set starting from '0' to differentiate between objects, so no duplicity is allowed
